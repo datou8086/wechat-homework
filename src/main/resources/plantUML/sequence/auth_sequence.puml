@@ -1,0 +1,38 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor 用户 as user
+
+participant 前端 as frontend
+participant 服务端 as server
+
+user -> frontend: 登录
+frontend -> server: POST /api/account/login
+server -> server: 登录校验通过，生成jwt token
+server --> frontend: 返回jwt token
+frontend --> user: 登录成功
+
+user -> frontend: GET user.html
+frontend -> frontend: cookie携带jwt token
+frontend -> server: 调用 user.html
+server -> AuthenticationInterceptor: getUser没有打注解PassToken，调用拦截器校验jwt token
+AuthenticationInterceptor -> AuthenticationInterceptor: 解析http request的token，校验token
+AuthenticationInterceptor -> AuthenticationInterceptor: 查询redis jwt token是否过期或删除
+AuthenticationInterceptor -> AuthenticationInterceptor: 判断redis token是否即将过期，是则自动续期1天
+server <-- AuthenticationInterceptor
+
+alt 校验通过
+server -> server: 解析jwt token的userId，查询数据库用户信息
+server --> frontend: 返回用户信息
+frontend -> frontend: 渲染user.html页面的用户信息
+frontend --> user: 展示会员中心页面
+
+else 校验不通过
+server --> frontend: redirect error.html
+frontend -> frontend: 渲染 error.html 页面
+frontend --> user: 展示error页面，引导用户重新登录或者注册
+end
+
+@enduml

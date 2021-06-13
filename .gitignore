@@ -1,0 +1,14 @@
+target/
+logs
+logging.path_IS_UNDEFINED/
+src/main/*.iml
+src/test/*.iml
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+
+

@@ -1,0 +1,10 @@
+@startuml
+'https://plantuml.com/use-case-diagram
+
+
+User -> (账号密码注册)
+User -> (账号密码登录)
+User -> (访问会员中心页面-支持鉴权)
+User -> (登出)
+
+@enduml

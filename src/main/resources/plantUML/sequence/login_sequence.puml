@@ -1,0 +1,34 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor 用户 as user
+
+participant 前端 as frontend
+participant 服务端 as server
+
+user -> frontend: 访问login.html
+frontend -> server: GET api/code/genImageCode
+server -> server: 随机生成验证码
+server -> redis: 保存验证码到redis
+server --> frontend: 返回验证码图片
+frontend -> frontend: 渲染登录页面
+frontend --> user: 展示登录页面和验证码图片
+
+user -> frontend: 提交登录
+frontend -> server: GET /api/account/getPublicKey
+server -> server: 生成公钥
+server --> frontend: 返回加密公钥
+frontend -> frontend: 用公钥 加密 用户的密码
+frontend -> server: POST /api/account/login
+server -> mysql: 查询账号是否登录过
+server -> redis: 校验图片验证码是否填写正确
+server -> server: 使用私钥解密 用户的密码，再对用户明文密码加盐hash生成数据库存储的密码
+server -> server: 生成jwt token并存入redis，返回前端作为session token
+server -> mysql: 查询user表和local_auth表，校验账号和加盐hash密码是否正确
+server --> frontend: 返回登录结果，包含成功或者失败
+frontend -> frontend: 登录成功
+frontend --> user: 跳转到会员中心页面
+
+@enduml

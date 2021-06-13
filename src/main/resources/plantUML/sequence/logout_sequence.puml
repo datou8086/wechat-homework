@@ -1,0 +1,23 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor 用户 as user
+
+participant 前端 as frontend
+participant 服务端 as server
+
+user -> frontend: 提交登出
+frontend -> server: POST /api/account/logout
+server -> server: 解析request的jwt token
+note left
+鉴权拦截器会校验redis这个token是否存在
+end note
+
+server -> redis: 根据token的userId删掉redis的token
+server --> frontend: 返回登出结果，包含成功或者失败
+frontend -> frontend: 登出成功
+frontend --> user: 跳转到首页index.html页面
+
+@enduml

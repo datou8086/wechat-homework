@@ -1,0 +1,16 @@
+server:
+  port: 8893
+
+spring:
+  profiles:
+    active: linux
+  thymeleaf:
+    cache: false
+
+resources:
+  static-locations: ["/templates/","/static/"]
+
+logging:
+  level:
+    root: info
+  path: ./logs

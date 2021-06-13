@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+browser -> server: POST /api/account/login
+server -> server: login success, generate jwt token
+server --> browser: {token: '...JWT...'}
+
+browser -> server: GET /api/user , cookie: {token: '...JWT...'}
+server -> server: validate token
+server --> browser: success, {name: hello}
+
+@enduml

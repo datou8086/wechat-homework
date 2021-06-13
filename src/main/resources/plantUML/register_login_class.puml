@@ -1,0 +1,101 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+class AccountController {
+AccountService accountService
+ResultDTO getPublicKey()
+ResultDTO register(UserLoginDTO userLoginDTO)
+ResultDTO login(UserLoginDTO userLoginDTO)
+ResultDTO logout(UserLoginDTO userLoginDTO)
+}
+
+class AccountService {
+UserService userService;
+LocalAuthService localAuthService;
+JwtTokenService jwtTokenService;
+RedisService redisService;
+Map<String, VerificationService> verificationServiceMap;
+
+ResultDTO register(UserLoginDTO userLoginDTO)
+ResultDTO login(UserLoginDTO userLoginDTO)
+ResultDTO logout(UserLoginDTO userLoginDTO)
+}
+
+class UserController {
+UserService userService
+getUser()
+}
+
+class UserService {
+UserMapper userMapper
+LocalAuthService localAuthService
+
+int insertUser(User user)
+User findUserById(Long userId)
+User insertUserAndLocalAuth()
+getUserResponseDTO()
+}
+
+class LocalAuthService {
+LocalAuthMapper localAuthMapper;
+
+int insertLocalAuth(LocalAuth localAuth)
+LocalAuth findLocalAuthByLoginId(String loginId)
+List findLocalAuthListByUserId(Long userId)
+}
+
+class RedisService {
+RedisTemplate<String, Object> redisTemplate
+
+void del(String... key)
+boolean set(String key, Object value)
+Object get(String key)
+}
+
+class JwtTokenService {
+String SECRET
+String getToken(Long userId)
+void verifyToken(String token)
+}
+
+interface VerificationService {
+String verifyCodeForRegister(VerifyCodeRequestDTO)
+void verifyCodeForLogin(VerifyCodeRequestDTO)
+}
+
+note right
+支持账密、手机号验证码、邮箱地址验证码等多种方式的快速扩展
+end note
+
+
+class UsernameVerificationServiceImpl {
+ImageCodeService imageCodeService
+String verifyCodeForRegister()
+void verifyCodeForLogin()
+}
+
+class MobileVerificationServiceImpl {
+String verifyCodeForRegister()
+void verifyCodeForLogin()
+}
+
+class EmailVerificationServiceImpl {
+String verifyCodeForRegister()
+void verifyCodeForLogin()
+}
+
+AccountController o-- AccountService
+UserController o-- UserService
+UserService o-- LocalAuthService
+AccountService o-- UserService
+AccountService o-- RedisService
+AccountService o-- LocalAuthService
+AccountService o-- JwtTokenService
+AccountService o-- VerificationService
+
+VerificationService <|- UsernameVerificationServiceImpl
+VerificationService <|- MobileVerificationServiceImpl
+VerificationService <|- EmailVerificationServiceImpl
+
+@enduml
